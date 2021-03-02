@@ -1,4 +1,4 @@
-codeship_example:
+codeship:
   build:
     image: codeship
     dockerfile: Dockerfile
