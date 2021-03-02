@@ -1,6 +1,8 @@
-codeship:
-  build:
-    image: codeship
-    dockerfile: Dockerfile
-  environment:
-    EXAMPLE_ENV_VAR: example-var
+- type: parallel
+  steps:
+  - service: app
+    command: ./script/ci/ci.parallel spec
+  - service: app
+    command: ./script/ci/ci.parallel plugin
+  - service: app
+    command: ./script/ci/ci.parallel qunit
