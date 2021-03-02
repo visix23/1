@@ -1,0 +1,27 @@
+tasks:
+  build-image:
+    steps:
+    - docker/build:
+        image: razorci/ruby:2
+        tags: ["${CI_COMMIT_SHA}", "latest"]
+
+  unit-test:
+    runner:
+      containers:
+      - image: razorci/ruby:2
+        environment:
+        - DB_URL=postgres://root:secret@localhost/test
+        - RAILS_ENV=test
+      - image: mysql:5.6
+        environment:
+        - MYSQL_ROOT_PASSWORD=secret
+        - MYSQL_DATABASE=test
+        - MYSQL_ROOT_HOST=%
+    steps:
+    - run: bundle exec rspec
+
+  deploy-staging:
+    depends: [build-image, unit-test]
+    steps:
+    - run: kubectl set image deployment.v1.apps/api main=gcr.io/razorops/demo:$CI_COMMIT_SHA
+    when: branch == 'staging'
